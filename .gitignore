@@ -1,0 +1,9 @@
+**/.git/
+**/.github/
+.env
+data/
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+*.retry
