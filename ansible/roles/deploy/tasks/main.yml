@@ -5,7 +5,7 @@
 
 - name: Clone repository
   ansible.builtin.git:
-    repo: https://github.com/ТВОЙ_ЛОГИН/minecraft-devops.git
+    repo: https://github.com/VladkaKreper/minecraft-server
     dest: /opt/minecraft
     version: main
     force: true
