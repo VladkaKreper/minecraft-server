@@ -7,3 +7,4 @@ data/
 .terraform/
 terraform.tfvars
 *.retry
+.vault_pass
