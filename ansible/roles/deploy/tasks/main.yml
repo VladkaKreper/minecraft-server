@@ -22,4 +22,4 @@
     project_src: /opt/minecraft/docker
     state: present
     pull: missing
-    
+  
