@@ -1,0 +1,6 @@
+users:
+  - name: ubuntu
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDSUoo30e6woNzrsUl0xPpLYOim481Be4m9IY++wON/A ansible-lab

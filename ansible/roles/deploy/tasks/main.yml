@@ -7,7 +7,7 @@
   ansible.builtin.git:
     repo: https://github.com/VladkaKreper/minecraft-server
     dest: /opt/minecraft
-    version: main
+    version: master
     force: true
 
 - name: Write .env with secrets
