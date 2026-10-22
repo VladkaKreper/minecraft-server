@@ -1,0 +1,10 @@
+groups:
+  - name: minecraft
+    rules:
+      - alert: MinecraftDown
+        expr: minecraft_status_healthy == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Minecraft server is down"

@@ -22,3 +22,17 @@
     project_src: /opt/minecraft/docker
     state: present
     pull: missing
+
+- name: Generate monitoring .env once
+  ansible.builtin.copy:
+    dest: /opt/minecraft/monitoring/.env
+    content: |
+      GRAFANA_PASSWORD={{ lookup('ansible.builtin.password', '/dev/null length=24 chars=ascii_letters,digits') }}
+    mode: "0600"
+    force: false
+  no_log: true
+
+- name: Run monitoring stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/minecraft/monitoring
+    state: present
