@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
 
   cadvisor:
-    image: google/cadvisor:v0.60.6
+    image: ghcr.io/google/cadvisor:v0.60.5
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
