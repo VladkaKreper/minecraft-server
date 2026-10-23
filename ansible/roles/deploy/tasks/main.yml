@@ -36,3 +36,18 @@
   community.docker.docker_compose_v2:
     project_src: /opt/minecraft/monitoring
     state: present
+
+- name: Create alertmanager secrets directory
+  ansible.builtin.file:
+    path: /opt/minecraft/monitoring/alertmanager/secrets
+    state: directory
+    mode: "0755"
+
+- name: Write Telegram token
+  ansible.builtin.copy:
+    dest: /opt/minecraft/monitoring/alertmanager/secrets/telegram_token
+    content: "{{ telegram_bot_token }}"
+    owner: "65534"
+    group: "65534"
+    mode: "0400"
+  no_log: true

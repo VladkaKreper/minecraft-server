@@ -8,3 +8,5 @@ terraform.tfvars
 *.retry
 .vault_pass
 **/.DS_Store
+.vscode
+monitoring/alertmanager/secrets/
