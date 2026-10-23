@@ -36,3 +36,8 @@ jobs:
 
       - name: Validate compose file
         run: docker compose -f docker/docker-compose.yml config -q
+
+      - name: Validate monitoring compose
+        run: |
+          cp monitoring/.env.example monitoring/.env
+          docker compose -f monitoring/docker-compose.yml config -q

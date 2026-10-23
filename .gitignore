@@ -7,3 +7,4 @@ data/
 terraform.tfvars
 *.retry
 .vault_pass
+**/.DS_Store
