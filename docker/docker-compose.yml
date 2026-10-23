@@ -11,9 +11,34 @@ services:
       MEMORY: "3G"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "${RCON_PASSWORD:?RCON_PASSWORD не задан}"
+
+  backup:
+    image: itzg/mc-backup
+    container_name: mc-backup
+    depends_on:
+      - mc
+    environment:
+      BACKUP_METHOD: rclone
+      RCLONE_REMOTE: router
+      RCLONE_DEST_DIR: /minecraft-backups
+      RCLONE_COMPRESS_METHOD: gzip
+      RCON_HOST: mc
+      RCON_PASSWORD: "${RCON_PASSWORD:?not set}"
+      INITIAL_DELAY: "2m"
+      BACKUP_INTERVAL: "6h"
+      PRUNE_BACKUPS_DAYS: "7"
+      RCLONE_CONFIG_ROUTER_TYPE: webdav
+      RCLONE_CONFIG_ROUTER_URL: "${WEBDAV_URL:?not set}"
+      RCLONE_CONFIG_ROUTER_VENDOR: other
+      RCLONE_CONFIG_ROUTER_USER: "${WEBDAV_USER:?not set}"
+      RCLONE_CONFIG_ROUTER_PASS: "${WEBDAV_PASS_OBSCURED:?not set}"
+    
     volumes:
       - ./data:/data
       - ./mods:/mods:ro
+      - backup-tmp:/backups
     stdin_open: true
     tty: true
     restart: unless-stopped
+volumes:
+  backup-tmp:

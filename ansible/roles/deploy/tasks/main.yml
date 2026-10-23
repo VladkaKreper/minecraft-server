@@ -13,7 +13,11 @@
 - name: Write .env with secrets
   ansible.builtin.copy:
     dest: /opt/minecraft/docker/.env
-    content: "RCON_PASSWORD={{ rcon_password }}\n"
+    content: |
+      RCON_PASSWORD={{ rcon_password }}
+      WEBDAV_URL={{ webdav_url }}
+      WEBDAV_USER={{ webdav_user }}
+      WEBDAV_PASS_OBSCURED={{ webdav_pass_obscured }}
     mode: "0600"
   no_log: true
 
