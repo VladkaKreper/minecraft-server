@@ -23,7 +23,7 @@ services:
       HOME: /tmp
     volumes:
       - ./data:/data
-    restart: "no"
+    restart: "unless-stopped"
 
  mc:
     image: itzg/minecraft-server:java8
