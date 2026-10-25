@@ -10,6 +10,14 @@
     version: mods_sync
     force: true
 
+- name: Create data directory owned by the server user
+  ansible.builtin.file:
+    path: /opt/minecraft/docker/data
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
 - name: Write .env with secrets
   ansible.builtin.copy:
     dest: /opt/minecraft/docker/.env
@@ -21,12 +29,26 @@
     mode: "0600"
   no_log: true
 
+- name: Sync mods, config and scripts from WebDAV
+  ansible.builtin.command:
+    cmd: docker compose run --rm -T sync
+    chdir: /opt/minecraft/docker
+  register: files_sync
+  changed_when: (files_sync.stdout ~ files_sync.stderr) is search('Copied|Deleted')
+
 - name: Run docker compose
   community.docker.docker_compose_v2:
     project_src: /opt/minecraft/docker
     state: present
     pull: missing
 
+- name: Restart Minecraft if files changed
+  ansible.builtin.command:
+    cmd: docker compose restart mc
+    chdir: /opt/minecraft/docker
+  when: files_sync.changed
+  changed_when: true
+  
 - name: Generate monitoring .env once
   ansible.builtin.copy:
     dest: /opt/minecraft/monitoring/.env

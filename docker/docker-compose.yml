@@ -6,26 +6,34 @@ x-rclone-env: &rclone-env
    RCLONE_CONFIG_ROUTER_PASS: "${WEBDAV_PASS_OBSCURED:?not set}"
 
 services:
- mods-sync:
+ sync:
     image: rclone/rclone
+    user: "1000:1000"
     entrypoint: ["/bin/sh", "-c"]
-    command: 
-    - |
+    command:
+      - |
         set -e
-        rclone sync router:/minecraft-config /config -v
-        rclone sync router:/minecraft-scripts /scripts -v
-        rclone sync router:/minecraft-mods /mods -v
+        rm -f /data/.sync-complete
+        rclone sync router:/minecraft-mods /data/mods -v
+        rclone copy router:/minecraft-config /data/config -v
+        rclone sync router:/minecraft-scripts /data/scripts -v
+        touch /data/.sync-complete
     environment:
       <<: *rclone-env
+      HOME: /tmp
     volumes:
-      - mods:/mods
-      - scripts:/scripts
-      - config:/config
+      - ./data:/data
     restart: "no"
 
  mc:
     image: itzg/minecraft-server:java8
     container_name: mc-1710
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        until [ -f /data/.sync-complete ]; do echo "waiting for mods sync..."; sleep 2; done
+        exec /image/scripts/start
     ports:
       - "25565:25565"
     environment:
@@ -38,7 +46,6 @@ services:
       RCON_PASSWORD: "${RCON_PASSWORD:?RCON_PASSWORD не задан}"
     volumes:
       - ./data:/data
-      - mods:/mods:ro
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -61,13 +68,10 @@ services:
       PRUNE_BACKUPS_DAYS: "7"
     
     volumes:
-      - ./data:/data
+      - ./data:/data:ro
       - backup-tmp:/backups
     stdin_open: true
     tty: true
     restart: unless-stopped
 volumes:
-  mods:
-  scripts:
-  config:
   backup-tmp:
