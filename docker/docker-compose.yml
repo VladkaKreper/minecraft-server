@@ -8,13 +8,13 @@ x-rclone-env: &rclone-env
 services:
  mods-sync:
     image: rclone/rclone
-
+    entrypoint: ["/bin/sh", "-c"]
     command: 
     - |
         set -e
-        rclone sync router:/minecraft-config /config 
-        rclone sync router:/minecraft-scripts /scripts 
-        rclone sync router:/minecraft-mods /mods
+        rclone sync router:/minecraft-config /config -v
+        rclone sync router:/minecraft-scripts /scripts -v
+        rclone sync router:/minecraft-mods /mods -v
     environment:
       <<: *rclone-env
     volumes:
