@@ -14,9 +14,9 @@ services:
       - |
         set -e
         rm -f /data/.sync-complete
-        rclone sync router:/minecraft-mods /data/mods -v
-        rclone copy router:/minecraft-config /data/config -v
-        rclone sync router:/minecraft-scripts /data/scripts -v
+        rclone sync router:/minecraft-mods /data/mods -v --max-delete 20 --backup-dir /data/.sync-trash/mods
+        rclone sync router:/minecraft-config /data/config -v
+        rclone sync router:/minecraft-scripts /data/scripts -v --max-delete 20 --backup-dir /data/.sync-trash/scripts
         touch /data/.sync-complete
     environment:
       <<: *rclone-env
@@ -41,7 +41,6 @@ services:
       TYPE: "FORGE"
       VERSION: "1.7.10"
       MEMORY: "6G"
-      REMOVE_OLD_MODS: "TRUE"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "${RCON_PASSWORD:?RCON_PASSWORD не задан}"
     volumes:
