@@ -8,11 +8,19 @@ x-rclone-env: &rclone-env
 services:
  mods-sync:
     image: rclone/rclone
-    command: sync router:/minecraft-mods /mods
+
+    command: 
+    - |
+        set -e
+        rclone sync router:/minecraft-config /config 
+        rclone sync router:/minecraft-scripts /scripts 
+        rclone sync router:/minecraft-mods /mods
     environment:
       <<: *rclone-env
     volumes:
       - mods:/mods
+      - scripts:/scripts
+      - config:/config
     restart: "no"
 
  mc:
@@ -24,7 +32,7 @@ services:
       EULA: "TRUE"
       TYPE: "FORGE"
       VERSION: "1.7.10"
-      MEMORY: "3G"
+      MEMORY: "6G"
       REMOVE_OLD_MODS: "TRUE"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "${RCON_PASSWORD:?RCON_PASSWORD не задан}"
@@ -60,4 +68,6 @@ services:
     restart: unless-stopped
 volumes:
   mods:
+  scripts:
+  config:
   backup-tmp:
