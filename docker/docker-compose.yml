@@ -1,5 +1,21 @@
+x-rclone-env: &rclone-env
+   RCLONE_CONFIG_ROUTER_TYPE: webdav
+   RCLONE_CONFIG_ROUTER_URL: "${WEBDAV_URL:?not set}"
+   RCLONE_CONFIG_ROUTER_VENDOR: other
+   RCLONE_CONFIG_ROUTER_USER: "${WEBDAV_USER:?not set}"
+   RCLONE_CONFIG_ROUTER_PASS: "${WEBDAV_PASS_OBSCURED:?not set}"
+
 services:
-  mc:
+ mods-sync:
+    image: rclone/rclone
+    command: sync router:/minecraft-mods /mods
+    environment:
+      <<: *rclone-env
+    volumes:
+      - mods:/mods
+    restart: "no"
+
+ mc:
     image: itzg/minecraft-server:java8
     container_name: mc-1710
     ports:
@@ -9,15 +25,23 @@ services:
       TYPE: "FORGE"
       VERSION: "1.7.10"
       MEMORY: "3G"
+      REMOVE_OLD_MODS: "TRUE"
       ENABLE_RCON: "true"
       RCON_PASSWORD: "${RCON_PASSWORD:?RCON_PASSWORD не задан}"
+    volumes:
+      - ./data:/data
+      - mods:/mods:ro
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
 
-  backup:
+ backup:
     image: itzg/mc-backup
     container_name: mc-backup
     depends_on:
       - mc
     environment:
+      <<: *rclone-env
       BACKUP_METHOD: rclone
       RCLONE_REMOTE: router
       RCLONE_DEST_DIR: /minecraft-backups
@@ -27,18 +51,13 @@ services:
       INITIAL_DELAY: "2m"
       BACKUP_INTERVAL: "6h"
       PRUNE_BACKUPS_DAYS: "7"
-      RCLONE_CONFIG_ROUTER_TYPE: webdav
-      RCLONE_CONFIG_ROUTER_URL: "${WEBDAV_URL:?not set}"
-      RCLONE_CONFIG_ROUTER_VENDOR: other
-      RCLONE_CONFIG_ROUTER_USER: "${WEBDAV_USER:?not set}"
-      RCLONE_CONFIG_ROUTER_PASS: "${WEBDAV_PASS_OBSCURED:?not set}"
     
     volumes:
       - ./data:/data
-      - ./mods:/mods:ro
       - backup-tmp:/backups
     stdin_open: true
     tty: true
     restart: unless-stopped
 volumes:
+  mods:
   backup-tmp:
