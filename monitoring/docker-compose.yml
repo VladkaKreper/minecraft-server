@@ -35,7 +35,7 @@ services:
     image: prom/node-exporter:v1.12.1
     pid: host
     volumes:
-      - /:/host:ro,rslave
+      - /:/host:ro
     command:
       - "--path.rootfs=/host"
     restart: unless-stopped
