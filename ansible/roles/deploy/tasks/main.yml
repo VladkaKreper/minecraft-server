@@ -33,8 +33,10 @@
   ansible.builtin.command:
     cmd: docker compose run --rm -T sync
     chdir: /opt/minecraft/docker
-  register: files_sync
-  changed_when: (files_sync.stdout ~ files_sync.stderr) is search('Copied|Deleted')
+  register: deploy_files_sync
+  changed_when: (deploy_files_sync.stdout ~ deploy_files_sync.stderr) is search('Copied|Deleted')
+  notify: Restart minecraft
+
 
 - name: Run docker compose
   community.docker.docker_compose_v2:
@@ -42,13 +44,9 @@
     state: present
     pull: missing
 
-- name: Restart Minecraft if files changed
-  ansible.builtin.command:
-    cmd: docker compose restart mc
-    chdir: /opt/minecraft/docker
-  when: files_sync.changed
-  changed_when: true
-  
+- name: Apply pending handlers now
+  ansible.builtin.meta: flush_handlers
+
 - name: Generate monitoring .env once
   ansible.builtin.copy:
     dest: /opt/minecraft/monitoring/.env

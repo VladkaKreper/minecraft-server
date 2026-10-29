@@ -1,0 +1,6 @@
+---
+- name: Restart minecraft
+  ansible.builtin.command: docker compose restart mc
+  args:
+    chdir: /opt/minecraft/docker
+  changed_when: true
